@@ -9,7 +9,6 @@ import com.example.dima.criminalintent.R;
 import com.example.dima.criminalintent.ui.fragments.CrimeFragment;
 
 public class CrimeActivity extends FragmentActivity {
-int i = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
