@@ -1,18 +1,22 @@
 package com.example.dima.criminalintent.ui.activity;
 
+import android.app.ActionBar;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 
+import android.support.v7.app.ActionBarActivity;
+
 import com.example.dima.criminalintent.R;
-import com.example.dima.criminalintent.ui.fragments.CrimeListFragment;
 
 /**
  * Created by Dima on 18.01.2016.
  */
 public abstract class SingleFragmentActivity extends FragmentActivity {
     protected abstract Fragment createFragment();
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,4 +30,7 @@ public abstract class SingleFragmentActivity extends FragmentActivity {
                     .commit();
         }
     }
+
+
+
 }

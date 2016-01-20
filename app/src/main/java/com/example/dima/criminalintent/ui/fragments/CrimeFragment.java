@@ -88,13 +88,11 @@ public class CrimeFragment extends Fragment {
             public void onClick(View v) {
                 FragmentManager fm = getActivity()
                         .getSupportFragmentManager();
-                DatePickerFragment  Datedialog = DatePickerFragment.newInstanse(mCrime.getDate());
+                DatePickerFragment Datedialog = DatePickerFragment.newInstanse(mCrime.getDate());
                 Datedialog.setTargetFragment(CrimeFragment.this, REQUEST_DATE);
                 Datedialog.show(fm, DIALOG_DATE);
 
             }
-
-
 
 
         });
@@ -125,7 +123,7 @@ public class CrimeFragment extends Fragment {
             timeDialog.setTargetFragment(CrimeFragment.this, REQUEST_TIME);
             timeDialog.show(fm, DIALOG_TIME);
 
-            }
+        }
 
         if (requestCode == REQUEST_TIME) {
             Date date = (Date) data
