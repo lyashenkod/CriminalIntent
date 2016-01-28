@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.example.dima.criminalintent.R;
 import com.example.dima.criminalintent.entity.Crime;
+import com.example.dima.criminalintent.ui.activity.CrimePagerActivity;
 import com.example.dima.criminalintent.utils.CrimeLab;
 
 import java.text.DateFormat;

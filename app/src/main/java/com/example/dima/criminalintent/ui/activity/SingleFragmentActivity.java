@@ -13,7 +13,7 @@ import com.example.dima.criminalintent.R;
 /**
  * Created by Dima on 18.01.2016.
  */
-public abstract class SingleFragmentActivity extends FragmentActivity {
+public abstract class SingleFragmentActivity extends ActionBarActivity {
     protected abstract Fragment createFragment();
 
 

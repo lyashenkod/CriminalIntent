@@ -2,6 +2,7 @@ package com.example.dima.criminalintent.ui.fragments;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -48,12 +49,14 @@ public class CrimeFragment extends Fragment {
         mDateButton.setText(DateFormat(mCrime.getDate()));
     }
 
+    public CrimeFragment() {
+        mCrime = new Crime();
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         UUID crimeId = (UUID) getArguments().getSerializable(EXTRA_CRIME_ID);
-        mCrime = new Crime();
         mCrime = CrimeLab.get(getActivity()).getCrime(crimeId);
     }
 
@@ -61,8 +64,14 @@ public class CrimeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_crime, parent, false);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && getActivity().getActionBar() != null) {
+            getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
+        }
         mTitleFied = (EditText) v.findViewById(R.id.crime_title);
-        mTitleFied.setText(mCrime.getTitle().toString());
+        if (mCrime.getTitle() != null) {
+            mTitleFied.setText(mCrime.getTitle().toString());
+        }
         mTitleFied.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {

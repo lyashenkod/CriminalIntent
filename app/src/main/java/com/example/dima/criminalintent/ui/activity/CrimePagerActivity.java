@@ -1,4 +1,4 @@
-package com.example.dima.criminalintent.ui.fragments;
+package com.example.dima.criminalintent.ui.activity;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -6,9 +6,11 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBarActivity;
 
 import com.example.dima.criminalintent.R;
 import com.example.dima.criminalintent.entity.Crime;
+import com.example.dima.criminalintent.ui.fragments.CrimeFragment;
 import com.example.dima.criminalintent.utils.CrimeLab;
 
 import java.util.ArrayList;
@@ -17,7 +19,7 @@ import java.util.UUID;
 /**
  * Created by Dima on 19.01.2016.
  */
-public class CrimePagerActivity extends FragmentActivity {
+public class CrimePagerActivity extends ActionBarActivity {
     private ViewPager mViewPager;
     private ArrayList<Crime> mCrimes;
 
