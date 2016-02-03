@@ -38,6 +38,7 @@ public class CrimeFragment extends Fragment {
     private Crime mCrime;
     private EditText mTitleFied;
     private Button mDateButton;
+    private Button mDeleteButton;
     private CheckBox mSolvedCheckBox;
     public static final String EXTRA_CRIME_ID =
             "com.example.dima.criminalintent.ui.fragments.crime_id";
@@ -69,7 +70,7 @@ public class CrimeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_crime, parent, false);
 
-
+        mDeleteButton = (Button) v.findViewById(R.id.crime_delete);
         setHasOptionsMenu(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && getActivity().getActionBar() != null) {
             if (NavUtils.getParentActivityName(getActivity()) != null) {
@@ -121,6 +122,14 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 mCrime.setSolved(isChecked);
+            }
+        });
+
+        mDeleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CrimeLab.get(getActivity()).deleteCrime(mCrime);
+                getActivity().finish();
             }
         });
 
@@ -190,6 +199,8 @@ public class CrimeFragment extends Fragment {
                 return super.onOptionsItemSelected(item);
         }
     }
+
+
     @Override
     public void onPause() {
         super.onPause();
