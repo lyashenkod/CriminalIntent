@@ -1,14 +1,17 @@
 package com.example.dima.criminalintent.ui.fragments;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.NavUtils;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -61,13 +64,19 @@ public class CrimeFragment extends Fragment {
     }
 
 
+    @TargetApi(11)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_crime, parent, false);
 
+
+        setHasOptionsMenu(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && getActivity().getActionBar() != null) {
-            getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
+            if (NavUtils.getParentActivityName(getActivity()) != null) {
+                getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
+            }
         }
+
         mTitleFied = (EditText) v.findViewById(R.id.crime_title);
         if (mCrime.getTitle() != null) {
             mTitleFied.setText(mCrime.getTitle().toString());
@@ -158,5 +167,32 @@ public class CrimeFragment extends Fragment {
         return df.format(date) + " " + simpleDateFormat.format(date);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                if (NavUtils.getParentActivityName(getActivity()) != null) {
+                    NavUtils.navigateUpFromSameTask(getActivity());
+                }
 
+                // Будет реализовано позднее
+                return true;
+            case R.id.menu_item_show_subtitle:
+                if (getActivity().getActionBar().getSubtitle() == null) {
+                    getActivity().getActionBar().setSubtitle(R.string.subtitle);
+                    item.setTitle(R.string.hide_subtitle);
+                } else {
+                    getActivity().getActionBar().setSubtitle(null);
+                    item.setTitle(R.string.show_subtitle);
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        CrimeLab.get(getActivity()).saveCrimes();
+    }
 }

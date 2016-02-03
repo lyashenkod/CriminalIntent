@@ -1,11 +1,14 @@
 package com.example.dima.criminalintent.ui.fragments;
 
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -32,6 +35,7 @@ import java.util.Locale;
  */
 public class CrimeListFragment extends ListFragment {
     private ArrayList<Crime> mCrimes;
+    private boolean mSubtitleVisible;
     private static final String TAG = "CrimeListFragment";
     private static final int REQUEST_CRIME = 1;
 
@@ -45,6 +49,29 @@ public class CrimeListFragment extends ListFragment {
         CrimeAdapter adapter = new CrimeAdapter(mCrimes);
         setListAdapter(adapter);
 
+
+    }
+
+    @TargetApi(11)
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
+        View v = super.onCreateView(inflater, parent, savedInstanceState);
+        View view = inflater.inflate(R.layout.fragment_list_crime, parent, false);
+        TextView textView = (TextView) view.findViewById(R.id.crime_empty_text);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            if (mSubtitleVisible) {
+                getActivity().getActionBar().setSubtitle(R.string.subtitle);
+            }
+        }
+
+        return v;
+    }
+
+
+    @Override
+    public void setEmptyText(CharSequence text) {
+        text = "Список Пуст";
+        super.setEmptyText(text);
     }
 
     @Override
@@ -72,26 +99,40 @@ public class CrimeListFragment extends ListFragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.fragment_crime_list, menu);
+        MenuItem showSubtitle = menu.findItem(R.id.menu_item_show_subtitle);
+        if (mSubtitleVisible && showSubtitle != null) {
+            showSubtitle.setTitle(R.string.hide_subtitle);
+        }
     }
 
-
+    @TargetApi(11)
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {case R.id.menu_item_new_crime:
-            Crime crime = new Crime();
-            CrimeLab.get(getActivity()).addCrime(crime);
-            Intent i = new Intent(getActivity(), CrimePagerActivity.class);
-            i.putExtra(CrimeFragment.EXTRA_CRIME_ID, crime.getId());
-            startActivityForResult(i, 0);
-            return true;
+        switch (item.getItemId()) {
+            case R.id.menu_item_new_crime:
+                Crime crime = new Crime();
+                CrimeLab.get(getActivity()).addCrime(crime);
+                Intent i = new Intent(getActivity(), CrimePagerActivity.class);
+                i.putExtra(CrimeFragment.EXTRA_CRIME_ID, crime.getId());
+                startActivityForResult(i, 0);
+                return true;
+            case R.id.menu_item_show_subtitle:
+                if (getActivity().getActionBar() != null) {
+                    getActivity().getActionBar().setSubtitle(null);
+                    mSubtitleVisible = false;
+                    item.setTitle(R.string.show_subtitle);
+                }
+//                } else {
+//                    getActivity().getActionBar().setSubtitle(null);
+//                    mSubtitleVisible = false;
+//                    item.setTitle(R.string.show_subtitle);
+//                }
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
-
-
-
-
 
 
     public void returnResult() {
