@@ -1,8 +1,11 @@
 package com.example.dima.criminalintent.entity;
 
+import android.app.Activity;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.Date;
 import java.util.UUID;
 
@@ -36,6 +39,7 @@ public class Crime {
         if (json.has(JSON_PHOTO))
             mPhoto = new Photo(json.getJSONObject(JSON_PHOTO));
     }
+
 
     public JSONObject toJSON() throws JSONException {
         JSONObject json = new JSONObject();
@@ -82,6 +86,15 @@ public class Crime {
     public void setPhoto(Photo p) {
         mPhoto = p;
     }
+
+    public void delPhoto(Activity activity) {
+        Photo p = getPhoto();
+        String filename = activity
+                .getFileStreamPath(p.getFilename()).getAbsolutePath();
+        File file = new File(filename);
+        file.delete();
+    }
+
     @Override
     public String toString() {
         return mTitle;

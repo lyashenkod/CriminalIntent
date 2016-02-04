@@ -64,8 +64,7 @@ public class CrimeListFragment extends ListFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         View v = super.onCreateView(inflater, parent, savedInstanceState);
-        View view = inflater.inflate(R.layout.fragment_list_crime, parent, false);
-        TextView textView = (TextView) view.findViewById(crime_empty_text);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             if (mSubtitleVisible) {
                 getActivity().getActionBar().setSubtitle(R.string.subtitle);
@@ -74,7 +73,6 @@ public class CrimeListFragment extends ListFragment {
 
         ListView listView = (ListView)v.findViewById(android.R.id.list);
         registerForContextMenu(listView);
-        listView.setEmptyView(textView);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             // Контекстные меню для Froyo и Gingerbread

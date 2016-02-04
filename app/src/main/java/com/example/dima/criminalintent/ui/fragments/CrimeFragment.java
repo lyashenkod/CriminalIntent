@@ -2,6 +2,8 @@ package com.example.dima.criminalintent.ui.fragments;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.BitmapDrawable;
@@ -12,7 +14,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,6 +35,7 @@ import com.example.dima.criminalintent.ui.fragments.dialog.TimePickerFragment;
 import com.example.dima.criminalintent.utils.CrimeLab;
 import com.example.dima.criminalintent.utils.PictureUtils;
 
+import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -51,6 +53,7 @@ public class CrimeFragment extends Fragment {
     private CheckBox mSolvedCheckBox;
     private ImageButton mPhotoButton;
     private ImageView mPhotoView;
+    private Intent intent;
 
     private static final String DIALOG_IMAGE = "image";
     public static final String EXTRA_CRIME_ID =
@@ -178,9 +181,41 @@ public class CrimeFragment extends Fragment {
                         .show(fm, DIALOG_IMAGE);
             }
         });
+        mPhotoView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                delPhotoDialog();
+                return true;
+            }
+        });
+
 
         return v;
     }
+
+
+    private void delPhotoDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder .setTitle(R.string.delete_photo )
+                .setCancelable(false)
+                .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        mCrime.delPhoto(getActivity());
+                        PictureUtils.cleanImageView(mPhotoView);
+                    }
+                })
+                .setNegativeButton(R.string.cancel,
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+
+        AlertDialog alert = builder.create();
+        alert.show();
+
+    }
+
 
     private void showPhoto() {
         // Назначение изображения, полученного на основе фотографии
@@ -194,6 +229,9 @@ public class CrimeFragment extends Fragment {
         mPhotoView.setImageDrawable(b);
     }
 
+
+
+
     @Override
     public void onStart() {
         super.onStart();
@@ -204,10 +242,12 @@ public class CrimeFragment extends Fragment {
     public void onStop() {
         super.onStop();
         PictureUtils.cleanImageView(mPhotoView);
+
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        intent = data;
         if (resultCode != Activity.RESULT_OK) return;
         if (requestCode == REQUEST_DATE) {
             Date date = (Date) data
@@ -234,14 +274,20 @@ public class CrimeFragment extends Fragment {
                     .getStringExtra(CrimeCameraFragment.EXTRA_PHOTO_FILENAME);
             if (filename != null) {
                 //   Log.i(TAG, "filename: " + filename);
-
-                Photo p = new Photo(filename);
-                mCrime.setPhoto(p);
+                if (mCrime.getPhoto()==null) {
+                    Photo photo = new Photo(filename);
+                    mCrime.setPhoto(photo);
+                }else {
+                    mCrime.delPhoto(getActivity());
+                    Photo photo = new Photo(filename);
+                    mCrime.setPhoto(photo);
+                }
                 //    Log.i(TAG, "Crime: " + mCrime.getTitle() + " has a photo");
                 showPhoto();
             }
         }
     }
+
 
     public static CrimeFragment newInstance(UUID crimeId) {
         Bundle args = new Bundle();

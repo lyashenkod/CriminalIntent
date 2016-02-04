@@ -30,6 +30,7 @@ public class CrimeCameraFragment extends Fragment {
     public static final String EXTRA_PHOTO_FILENAME =
             "criminalintent.photo_filename";
     private static final String TAG = "CrimeCameraFragment";
+
     private Camera mCamera;
     private SurfaceView mSurfaceView;
     private View mProgressContainer;

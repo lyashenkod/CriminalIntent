@@ -46,7 +46,9 @@ public class PictureUtils {
             return;
         // Стирание изображения для экономии памяти
         BitmapDrawable b = (BitmapDrawable) imageView.getDrawable();
-        b.getBitmap().recycle();
-        imageView.setImageDrawable(null);
+        if (b.getBitmap() != null) {
+            b.getBitmap().recycle();
+            imageView.setImageDrawable(null);
+        }
     }
 }
