@@ -13,5 +13,6 @@
     <string name="hide_subtitle">Скрыть Субтитры</string>
     <string name="subtitle">Если вы видите что-то, что-то скажите.</string>
     <string name="delete_crime">Удалить</string>
+    <string name="take">Снять!</string>
 
 </resources>

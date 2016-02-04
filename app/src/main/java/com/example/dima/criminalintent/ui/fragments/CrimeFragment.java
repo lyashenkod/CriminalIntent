@@ -3,6 +3,8 @@ package com.example.dima.criminalintent.ui.fragments;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,6 +12,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,12 +21,18 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import com.example.dima.criminalintent.R;
 import com.example.dima.criminalintent.entity.Crime;
+import com.example.dima.criminalintent.entity.Photo;
+import com.example.dima.criminalintent.ui.activity.CrimeCameraActivity;
 import com.example.dima.criminalintent.ui.fragments.dialog.DatePickerFragment;
+import com.example.dima.criminalintent.ui.fragments.dialog.ImageFragment;
 import com.example.dima.criminalintent.ui.fragments.dialog.TimePickerFragment;
 import com.example.dima.criminalintent.utils.CrimeLab;
+import com.example.dima.criminalintent.utils.PictureUtils;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -40,12 +49,16 @@ public class CrimeFragment extends Fragment {
     private Button mDateButton;
     private Button mDeleteButton;
     private CheckBox mSolvedCheckBox;
+    private ImageButton mPhotoButton;
+    private ImageView mPhotoView;
+
+    private static final String DIALOG_IMAGE = "image";
     public static final String EXTRA_CRIME_ID =
             "com.example.dima.criminalintent.ui.fragments.crime_id";
     private static final String DIALOG_DATE = "date";
     private static final String DIALOG_TIME = "time";
-
-
+    private static final String TAG = "CrimeFragment";
+    private static final int REQUEST_PHOTO = 2;
     private static final int REQUEST_DATE = 0;
     private static final int REQUEST_TIME = 1;
 
@@ -133,7 +146,64 @@ public class CrimeFragment extends Fragment {
             }
         });
 
+
+        mPhotoButton = (ImageButton) v.findViewById(R.id.crime_imageButton);
+        mPhotoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getActivity(), CrimeCameraActivity.class);
+                //startActivity(i);
+                startActivityForResult(i, REQUEST_PHOTO);
+            }
+        });
+        // Если камера недоступна, заблокировать функциональность
+        // работы с камерой
+        PackageManager pm = getActivity().getPackageManager();
+        if (!pm.hasSystemFeature(PackageManager.FEATURE_CAMERA) &&
+                !pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT)) {
+            mPhotoButton.setEnabled(false);
+        }
+
+        mPhotoView = (ImageView) v.findViewById(R.id.crime_imageView);
+        mPhotoView.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Photo p = mCrime.getPhoto();
+                if (p == null)
+                    return;
+                FragmentManager fm = getActivity()
+                        .getSupportFragmentManager();
+                String path = getActivity()
+                        .getFileStreamPath(p.getFilename()).getAbsolutePath();
+                ImageFragment.newInstance(path)
+                        .show(fm, DIALOG_IMAGE);
+            }
+        });
+
         return v;
+    }
+
+    private void showPhoto() {
+        // Назначение изображения, полученного на основе фотографии
+        Photo p = mCrime.getPhoto();
+        BitmapDrawable b = null;
+        if (p != null) {
+            String path = getActivity()
+                    .getFileStreamPath(p.getFilename()).getAbsolutePath();
+            b = PictureUtils.getScaledDrawable(getActivity(), path);
+        }
+        mPhotoView.setImageDrawable(b);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        showPhoto();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        PictureUtils.cleanImageView(mPhotoView);
     }
 
     @Override
@@ -158,6 +228,18 @@ public class CrimeFragment extends Fragment {
             mCrime.setDate(date);
             updateDate();
 
+        } else if (requestCode == REQUEST_PHOTO) {
+            // Создание нового объекта Photo и связывание его с Crime
+            String filename = data
+                    .getStringExtra(CrimeCameraFragment.EXTRA_PHOTO_FILENAME);
+            if (filename != null) {
+                //   Log.i(TAG, "filename: " + filename);
+
+                Photo p = new Photo(filename);
+                mCrime.setPhoto(p);
+                //    Log.i(TAG, "Crime: " + mCrime.getTitle() + " has a photo");
+                showPhoto();
+            }
         }
     }
 
