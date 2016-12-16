@@ -2,8 +2,6 @@ package com.example.dima.criminalintent.ui.activity;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.view.Window;
-import android.view.WindowManager;
 
 import com.example.dima.criminalintent.ui.fragments.CrimeCameraFragment;
 
@@ -20,6 +18,7 @@ public class CrimeCameraActivity extends SingleFragmentActivity {
 //        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
 
+        
         getSupportActionBar().hide();
     }
 
